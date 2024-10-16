@@ -69,7 +69,7 @@ leaveBtn.addEventListener("click",()=>{
     leaveBtn.value = "離席する"
   }else{
     willLeave = true
-    leaveBtn.value = "在籍する"
+    leaveBtn.value = "在席する"
   }
   socket.emit("leave",willLeave)
 })
@@ -99,8 +99,9 @@ function addMessage(msg) {
   if (typeof msg === "string") {
     msg = msg.split("𞄷");
   }
-  var li = document.createElement("span");
-  li.innerHTML = `<span onclick=reply('${msg[1]}')>${msg[1]}</span> : ${msg[0]}<span class=timestamp>${msg[2]}</span><br>`;
+  var li = document.createElement("div");
+  li.classList.add("message");
+  li.innerHTML = `<span class="name" onclick=reply('${msg[1]}')>${msg[1]}</span> <span class=timestamp>${msg[2]}</span><br>${msg[0]}`;
 
   main.appendChild(li);
 
