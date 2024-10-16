@@ -3,15 +3,18 @@ body{
   height:100%;
   margin:0px;
   padding:0px;
-  overflow:hidden;
-  background: linear-gradient(45deg, #2af598 0%, #009efd 100%);
-}
+  background: #dffbfb;
 
+  
+}
+span{
+  font-size:10px;
+}
 .main-frame{
   height:500px;
 
-  border:solid 1px #000000;
   overflow-y:scroll;
+  
 }
 .main{
   margin:0px;
@@ -28,12 +31,14 @@ span{
 }
 .bottom-ui{
   display:flex;
+  flex-flow: wrap;
+  max-width:800px;
 }
 .input-box{
   padding:6px;
 }
 .visitor{
-  min-width:600px;
+  min-width:800px;
   display:flex;
   overflow-wrap: auto-flow;
   overflow-y:scroll;
@@ -50,4 +55,28 @@ span{
   position: relative;
   cursor: pointer;
   width:60px;
+}
+
+.frame{
+  max-width:800px;
+
+}
+.box{
+  display:flex;
+  align-items: center;
+  flex-flow: wrap;
+  justify-content: space-around;
+}
+.message{
+  font-size:16px;
+border-top:#b4cfcf solid 1px;
+}
+.name{
+  font-size:12px;
+  padding-bottom:5px;
+}
+
+
+.main-frame{
+  background: #d7f4f4;
 }
