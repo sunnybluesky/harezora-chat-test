@@ -149,7 +149,7 @@ io.on("connection" /*接続*/, (socket) => {
      data[0] = `${getUserName(socket.id)}が離席しました。`   
       userLeaveList.push(socket.id)
     }else{
-      data[0] = `${getUserName(socket.id)}が在籍しました。`
+      data[0] = `${getUserName(socket.id)}が在席しました。`
       userLeaveList.splice(userLeaveList.indexOf(socket.id),1)
     }
     
