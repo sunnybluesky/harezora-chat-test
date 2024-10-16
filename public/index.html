@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <title>harezora-chat</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <h1 >harezora-chat</h1>
+    <div class=main-frame>
+<div class=main>
+</div>
+    </div>
+    <div class=bottom-ui>
+      <div class=input-box-label>
+        <span>username</span><br>
+        <span>message</span>
+      </div>
+      <div class=input-box>
+        <input type=text class=nameinp placeholder="username"><br>
+        <input type=text class=msginp placeholder="message" ><input type=button value="send" class=send-btn>
+      </div>
+      <div class=visitor>
+      </div>
+      <div class="volume-control"></div>
+      <div class="file-upload">
+        <div>
+          <label for="imageInput">画像をアップロード</label><br>
+        <input type="file" id="imageInput"　accept=".png,.jpg,.jpeg,.gif">
+        </div>
+        <input type=button class=leave value="離席する">
+      </div>
+    </div>
+
+    <br><br><br><br><br>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js" integrity="sha512-YeeA/Qxn5hYdkukScTCNNOhTrv1C2RubAGButJ1rmgQwZf/HdRaCGl+JAVkqsqaNRaYNHdheiuKKuPf9mDcqKg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src=js/main.js></script>
+    <script src=js/ip.js></script>
+    <script src=js/cookie.js></script>
+    
+  </body>
+</html>
