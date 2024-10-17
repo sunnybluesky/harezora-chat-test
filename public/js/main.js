@@ -21,7 +21,7 @@ socket.on("visitor", (name, ip,leaveList,id) => {
   for (let i = 0; i < visitor.length; i++) {
     var leaveText = '<font color=green title="在籍中">●</font>'
 
-    str += `<div class="visitor-name" width=100px id="visitor-${i}">${leaveText}<span class="visitor-body">${visitor[i]}</span><br><div class="visitor-id"  id="visitor-id-${i}">${ip}</div></div>`;
+    str += `<div class="visitor-name" width=100px id="visitor-${i}">${leaveText}<span class="visitor-body">${visitor[i]}</span></div>`;
   }
   document.querySelector(".visitor").innerHTML = str;
 });
