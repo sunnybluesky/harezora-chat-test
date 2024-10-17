@@ -31,6 +31,20 @@ function hexToUtf8(hexString) {
 }
 
 // Example usage:
+function decimalToBase32(decimal) {
+  // 32進数の基数となる文字列
+  const base32Chars = '0123456789abcdefghijklmnopqrstuv';
+
+  let base32 = '';
+  while (decimal > 0) {
+    // 余りを計算し、対応する文字を取得
+    const remainder = decimal % 32;
+    base32 = base32Chars[remainder] + base32;
+    // 商を次の計算に利用
+    decimal = Math.floor(decimal / 32);
+  }
+  return base32;
+}
 
 
 let ip = null
@@ -44,23 +58,11 @@ const data = await res.json()
   
 }
 test()
-//美しくないコードの典型
+
 let waitForIp = setInterval(()=>{
   if(ip !== null){
-    var hashed = null
-    hashIP(ip).then(hashedIP => hashed = hashedIP);
-    let waitForHash = setInterval(()=>{
-      if(hashed !== null){
-        hashIp = hashed;
-        const hexString = hashed;
-        const utf8String = hexToUtf8(hexString);
-        console.log(utf8String);
-        userId = utf8String
-        idLoadCmp()
-        clearInterval(waitForHash)
-
-      }
-    },10)
+    
+    userId = decimalToBase32(Math.floor(getUserColor()))
     clearInterval(waitForIp)
   }
 },10)
