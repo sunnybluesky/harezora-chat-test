@@ -17,13 +17,11 @@ socket.on("visitor", (name, ip,leaveList,id) => {
   }
   visitor = name;
   var str = "";
+  var hoverStr = "";
   for (let i = 0; i < visitor.length; i++) {
     var leaveText = '<font color=green title="在籍中">●</font>'
-    
-    str += `<div class="visitor-name" width=100px;height=30px>${leaveText}<span>${visitor[i]}</span><br><center><font size=0.5>ID: ${ip[i].slice(
-      0,
-      10,
-    )}</font></center></div>`;
+
+    str += `<div class="visitor-name" width=100px id="visitor-${i}">${leaveText}<span class="visitor-body">${visitor[i]}</span><br><div class="visitor-id"  id="visitor-id-${i}">${ip}</div></div>`;
   }
   document.querySelector(".visitor").innerHTML = str;
 });
@@ -56,7 +54,7 @@ let willLeave = false;
 const main = document.querySelector(".main");
 const mainFrame = document.querySelector(".main-frame");
 const sendBtn = document.querySelector(".send-btn");
-mainFrame.style.height = `${window.innerHeight - 200}px`;
+mainFrame.style.height = `${window.innerHeight - 250}px`;
 
 const leaveBtn = document.querySelector(".leave");
 
@@ -101,23 +99,30 @@ function addMessage(msg) {
   }
   var li = document.createElement("div");
   li.classList.add("message");
-  li.innerHTML = `<span class="name" onclick=reply('${msg[1]}')>${msg[1]}</span> <span class=timestamp>${msg[2]}</span><br>${msg[0]}`;
+  li.innerHTML = `<span class="name" onclick=reply('${msg[1]}')>${msg[1]}</span><span class=timestamp> Id:${msg[3]} ${msg[2]}</span><br>${msg[0]}`;
 
   main.appendChild(li);
 
   document.querySelector(".main-frame").scrollBy({
-    top: 30.4,
+    top: 47.2,
     left: 0,
     behavior: "smooth",
   });
 }
 function reply(name){
+  var check = confirm(`${name}に返信しますか？`)
+  if(check){
   if(messageInput.value.includes("@"+name) !== true){
+     
+  if(messageInput.value == ""){
+    alert("メッセージが入力されていません。")
+  }else{
     messageInput.value = `@${name},` + messageInput.value
-  if(messageInput.value == ""){}else{
     messageSend()
   }
-}}
+}
+}
+}
 function getCurrentTime() {
   const now = new Date();
   const hours = now.getHours().toString().padStart(2, "0");
@@ -153,10 +158,26 @@ function getUserColor() {
     }
   }
   for (var i = 0; i < ips.length - 1; i++) {
-    ips[i] = (ips[i] / max) * 255;
+    ips[i] = Math.floor((ips[i] / max) * 255);
   }
-  return "rgb(" + ips[0] + "," + ips[1] + "," + ips[2] + ")";
+  return ips[0] * ips[1] * ips[2];
 }
+
+function decimalToBase32(decimal) {
+  // 32進数の基数となる文字列
+  const base32Chars = '0123456789abcdefghijklmnopqrstuv';
+
+  let base32 = '';
+  while (decimal > 0) {
+    // 余りを計算し、対応する文字を取得
+    const remainder = decimal % 32;
+    base32 = base32Chars[remainder] + base32;
+    // 商を次の計算に利用
+    decimal = Math.floor(decimal / 32);
+  }
+  return base32;
+}
+
 function idLoadCmp() {
   const consoleStyle = (moji) => {
     const styles = `background-color: ${getUserColor()};
