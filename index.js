@@ -39,7 +39,7 @@ function getLog(){
 }
 console.log("ログの長さ : "+getLogLength())
 
-//ユーザーとか
+//ユーザー関連
 let userTabId = []
 let userTabIp = []
 let temporaryUserTabName = []
