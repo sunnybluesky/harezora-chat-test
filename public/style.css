@@ -3,7 +3,7 @@ body{
   padding:0px;
   background: #dffbfb;
 
-  overflow-y:hidden;
+  /*overflow-y:hidden;*/
 }
 h1{
   margin:3px;
