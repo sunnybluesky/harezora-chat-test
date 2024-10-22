@@ -1,227 +1,179 @@
-var colors = require('colors');
+//httpサーバーとsocket.ioのセットアップ
+const express = require('express');
+const app = express();
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require('socket.io');
+const io = new Server(server);
 
-//log.txtの読み取りと書き込み
+const colors = require('colors');
 
-const fs = require("fs");
-function addLog(m){
-  m=m+"\n"
-  if(getLogLength() < 500){
-  fs.appendFile("log.txt", m, (err) => {
-    if (err) throw err;
-  });
-  }else{
-    var text = fs.readFileSync("log.txt", 'utf8');
+const fs = require('fs');
+const logFilePath = 'log.txt';
+
+let userCount = 0;
+
+function addLog(m) {
+  for (var i = 0; i <= m.length - 1; i++) {
+    m[i] = encodeURIComponent(m[i]);
+  }
+  m.join(',');
+  m += '\n';
+  if (getLogLength() < 500) {
+    fs.appendFile(logFilePath, m, (err) => {
+      if (err) throw err;
+    });
+  } else {
+    var text = fs.readFileSync(logFilePath, 'utf8');
     var lines = text.toString().split('¥n');
     lines.shift();
-    m = lines.join("\n")
-    fs.writeFile("log.txt", m, (err) => {
+    m = lines.join('\n');
+    fs.writeFile(logFilePath, m, (err) => {
       if (err) throw err;
     });
   }
 }
-function deleteLog(data = "<font color='#ff0000'>これより前のメッセージはありません。</font>𞄷Server𞄷𞄷\n"){
+function deleteLog(data = '\n') {
   // 書き込み
 
-  fs.writeFile("log.txt", data, (err) => {
+  fs.writeFile(logFilePath, data, (err) => {
     if (err) throw err;
   });
-
 }
-function getLogLength(){
-var text = fs.readFileSync("log.txt", 'utf8');
-var lines = text.toString().split('¥n');
-  return lines.length
-}
-function getLog(){
-  var text = fs.readFileSync("log.txt", 'utf8');
+function getLogLength() {
+  var text = fs.readFileSync(logFilePath, 'utf8');
   var lines = text.toString().split('\n');
-  return lines
+  return lines.length - 1;
 }
-console.log("ログの長さ : "+getLogLength())
+function getLog() {
+  var text = fs.readFileSync(logFilePath, 'utf8');
+  var lines = text.toString().split('\n');
 
-//ユーザー関連
-let userTabId = []
-let userTabIp = []
-let temporaryUserTabName = []
-let userTabName = []
-let userLeaveList = []
-setInterval(()=>{
-  
-  io.emit("visitor",temporaryUserTabName,userTabIp,userLeaveList,userTabId)
-  userTabName = temporaryUserTabName
-  temporaryUserTabName = []
-  for(let i=0;i<userTabId.length-1;i++){
-    temporaryUserTabName.push("disconnected.")
-  }
-  for(let i=0;i<userTabId.length;i++){
-    io.to(userTabId[i]).emit("ask-name")
-  }
-},1000)
-
-function addUserTabName(id,name){
-  if(name === ""){
-    name = "anonymous"
-  }
-  temporaryUserTabName[userTabId.indexOf(id)] = name
-}
-function addUserTab(ip,id){
-  if(userTabIp.includes(ip)){}else{
-    console.log(`[${getCurrentTime()}] ${ip}が入室しました。`)
-  }
-  userTabId.push(id)
-  userTabIp.push(ip)
-  io.to(id).emit("visitor",temporaryUserTabName,userTabIp)
-}
-function deleteUserTab(id){
-  
-  for(var i=0;i<userTabId.length;i++){
-    if(userTabId[i] == id){
-      var ip = userTabIp[i]
-      userTabId.splice(i,1)
-      userTabIp.splice(i,1)
-      if(userTabIp.includes(ip)){}else{
-        console.log(`[${getCurrentTime()}] ${ip}が退出しました。`)
-      }
+  for (var i = 0; i <= lines.length - 1; i++) {
+    var arr = [];
+    for (var j = 0; j <= lines[i].split(',').length - 1; j++) {
+      arr.push(decodeURIComponent([lines[i].split(',')[j]]));
     }
+    lines[i] = arr;
   }
-  io.emit("visitor",temporaryUserTabName,userTabIp)
+  lines.pop();
+
+  return lines;
 }
-function getUserName(id){
-  var name = userTabName[userTabId.indexOf(id)]
-  console.log(`[${getCurrentTime()}] ${name} : img`);
-  return name
+console.log('ログの長さ : ' + getLogLength());
+
+//ログの長さが1以下でないならgetLog()を実行する。
+
+const messages = getLogLength() < 1 ? [] : getLog();
+//カンマで区切ってメッセージの配列をオブジェクトに変換
+if (messages != []) {
+  for (var i = 0; i <= getLogLength() - 1; i++) {
+    messages[i] = arrToObj(messages[i]);
+  }
 }
 
-//httpサーバーとsocket.ioのセットアップ
-const express = require("express");
-const app = express();
-const http = require("http");
-const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
+console.log(messages);
 
-app.use(express.static(__dirname + "/public"));
-
-io.on("connection" /*接続*/, (socket) => {
-  socket.on("disconnect" /*切断*/, () => {
-    if(userLeaveList.includes(socket.id)){
-    userLeaveList.splice(userLeaveList.indexOf(socket.id),1)
-    }
-    deleteUserTab(socket.id)
-    
-  });
-
-  socket.on("message" /*メッセージ*/, (msg,name,time,id) =>{
-    if(name===""){
-      name="anonymous"
-    }
-    console.log(`${id[0]+id[1]+id[2]} [${time}] ${name} : ${msg}`);
-    var data = [msg,name,time,id]
-    addLog(data.join("𞄷"));
-    io.emit("message" /*メッセージ*/, data);
-  })
-  socket.on("request-log" /*ログの要求*/,()=>{
-    var log = getLog()
-    io.to(socket.id).emit("log", log);
-  })
-  socket.on("user-id",(userId)=>{
-    addUserTab(userId,socket.id)
-    
-  })
-  socket.on("ask-name",(name)=>{
-    addUserTabName(socket.id,name)
-  })
-  socket.on("check",()=>{
-    io.to(socket.id).emit("check")
-  })
-  socket.on("image",(data)=>{
-    var name = getUserName(socket.id)
-    console.log(`[${getCurrentTime()}] ${name} : img`);
-
-    var data = [`<img src=${data}>`,name,getCurrentTime(),socket.id]
-    addLog(data.join("𞄷"));
-    io.emit("message" /*メッセージ*/, data);
-  });
-  socket.on("leave",(willLeave)=>{
-    var data = [``,"<font color=red>server</font>",getCurrentTime(),socket.id,"@silent"]
-
-    if(willLeave){
-     data[0] = `${getUserName(socket.id)}が離席しました。`   
-      userLeaveList.push(socket.id)
-    }else{
-      data[0] = `${getUserName(socket.id)}が在席しました。`
-      userLeaveList.splice(userLeaveList.indexOf(socket.id),1)
-    }
-    
-    io.emit("message",data)
-  })
-});
-
+app.use(express.static(__dirname + '/public'));
+//3000番ポート
 server.listen(3000, () => {
-  console.log("listening on *:3000");
-  console.log("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
-  console.log("┃   " + 'server setup complete!  '.rainbow + "┃")
-  console.log("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
-  setTimeout(()=>{
-    io.emit("reload");
-  },3000)
-  
+  console.log('');
+  console.log('┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓');
+  console.log('┃ ' + 'welcome to harezora-chat! '.rainbow + '┃');
+  console.log('┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛');
+});
+// ルーティングの設定。'/' にリクエストがあった場合 src/index.html を返す
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
 });
 
-
-//　コ　ン　ソ　ー　ル　入　力
-const readline = require('readline');
-const inputString = prompt => {
-  const readInterface = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
+io.on('connection', (socket) => {
+  connect(socket);
+  socket.on('disconnect', () => {
+    disconnect(socket);
   });
-  return new Promise(resolive => readInterface.question(prompt, inputString => {
-    readInterface.close()
-    resolive(inputString);
-  }));
+  //入室
+  socket.on('joinRoom', (roomName) => {
+    socket.join(roomName);
+    console.log(`User joined room: ${roomName}`);
+  });
+
+  // メッセージを送信
+  socket.on('sendMessage', (roomName, message) => {
+    var date = ('' + new Date()).split(' ')[4];
+    message.date = date;
+    var body = message.body;
+    var name = message.name;
+    var id = message.id;
+    var hoge = 'hoge';
+    var arr = [body, name, id, date, roomName, hoge];
+    io.to(roomName).emit('receiveMessage', arrToObj(arr));
+
+    addLog(arr);
+    messages.push(arrToObj(arr));
+  });
+  // 過去メッセージのリクエスト
+  socket.on('receivePastMessage', (len = 10) => {
+    start = messages.length - len < 0 ? 0 : messages.length - len;
+    var arr = messages.slice(messages.length - len, messages.length);
+    io.to(socket.id).emit('receivePastMessage', arr);
+  });
+  socket.on('requestUserCount', () => {
+    io.to(socket.id).emit('receiveUserCount', userCount);
+  });
+  socket.on('requestMessagesCount', () => {
+    io.to(socket.id).emit('receiveMessagesCount', messages.length);
+  });
+});
+
+function connect(socket) {
+  console.log(`user connected. id:${socket.id}`.blue);
+  userCount++;
+}
+function disconnect(socket) {
+  console.log(`user disconnected. id:${socket.id}`.red);
+  userCount--;
+}
+function arrToObj(arr) {
+  return {
+    body: arr[0],
+    name: arr[1],
+    id: arr[2],
+    date: arr[3],
+    roomName: arr[4],
+    hoge: arr[5],
+  };
+}
+
+//コマンドライン
+const readline = require('readline');
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+const commands = {
+  help: () => {
+    console.log('Available commands: help, exit, messages');
+  },
+  exit: () => {
+    console.log('Bye!');
+    rl.close();
+  },
+  messages: () => {
+    console.log(messages);
+  },
 };
 
-function input_string() {
-  (async() => {
-    const string = await inputString("\x1b[39m");
-    switch (string) {
-    case "help":
-      console.log("\x1b[33m")
-      console.log("コマンドの使い方は以下の通りです。")
-      console.log("ーーーーーーーーーーーーーーーーーーー")
-      console.log("「help」コマンドの使い方を表示します。")
-      console.log("「reload」全クライアントのページを再読み込みさせます。")
-      console.log("「visitor」クライアントの名前を表示します")
-      console.log("「delete-log」ログを消去します。")
-      console.log("ーーーーーーーーーーーーーーーーーーー\x1b[39m")
-      break;
-      case "visitor":
-        console.log(`「${string}」コマンドが実行されました。`)
-        console.log(userTabName)
-        break;
-    case "reload":
-      console.log(`「${string}」コマンドが実行されました。`)
-      io.emit("reload");
-      break;
-      case "delete-log":
-        console.log(`「${string}」コマンドが実行されました。`)
-        deleteLog();
-         break;  
-    default:
-      console.log("\x1b[31m該当するコマンドがありません。")
-    }
-    input_string();
-  })();
-}
-console.log("\x1b[33m 「help」で各コマンドの説明が表示されます。")
-input_string();
+rl.prompt();
 
-//現在時刻取得
-function getCurrentTime() {
-  const now = new Date();
-  const hours = now.getHours().toString().padStart(2, '0');
-  const minutes = now.getMinutes().toString().padStart(2, '0');
-  const seconds = now.getSeconds().toString().padStart(2, '0');
-  return hours + ':' + minutes + ':' + seconds;
-}
+rl.on('line', (line) => {
+  const command = line.trim().toLowerCase();
+  if (commands[command]) {
+    commands[command]();
+  } else {
+    console.log('Unknown command');
+  }
+  rl.prompt();
+});

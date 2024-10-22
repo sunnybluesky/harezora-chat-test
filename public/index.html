@@ -1,50 +1,34 @@
 <!DOCTYPE html>
 <html lang="ja">
   <head>
-    <meta charset="UTF-8">
     <title>harezora-chat</title>
+    <meta charset="UTF-8" />
     <link href="style.css" rel="stylesheet" type="text/css" />
-    <link rel="shortcut icon" href="img/favicon.ico">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/push.js/0.0.11/push.min.js"></script>
+    <link rel="shortcut icon" href="/img/favicon.ico" />
   </head>
   <body>
-    <h1>harezora-chat</h1>
-
-    <div class="box">
-      
-    <div class="frame">
-    <div class=main-frame>
-<div class=main>
-</div>
-    </div>
-    <div class=bottom-ui>
-      <div class=input-box-label>
-        <span>username</span><br>
-        <span>message</span>
-      </div>
-      <div class=input-box>
-        <input type=text class=nameinp placeholder="username"><br>
-        <input type=text class=msginp placeholder="message" ><input type=button value="send" class=send-btn>
-      </div>
-      <div class=visitor>
-      </div>
-      <div class="volume-control"></div>
-      <div class="file-upload">
-        <div>
-          <label for="imageInput">画像をアップロード</label><br>
-        <input type="file" id="imageInput"　accept=".png,.jpg,.jpeg,.gif">
+    <div class="main-frame">
+      <div class="main">
+        <h1>harezora-chat</h1>
+        <div class="message-list"></div>
+        <div class="bottom-ui">
+          name:
+          <input type="text" class="input-name" />
+          <img src="img/face.svg" id="face-icon" />
+          <span class="user-count"></span>
+          <br />
+          <input
+            type="text"
+            class="input-message"
+            placeholder="Enter your message..."
+          />
         </div>
-        <input type=button class=leave value="離席する">
       </div>
     </div>
-
-    <br><br><br><br><br>
-      </div>
-      </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js" integrity="sha512-YeeA/Qxn5hYdkukScTCNNOhTrv1C2RubAGButJ1rmgQwZf/HdRaCGl+JAVkqsqaNRaYNHdheiuKKuPf9mDcqKg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-    <script src=js/main.js></script>
-    <script src=js/ip.js></script>
-    <script src=js/cookie.js></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+    <script src="js/ip.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/front.js"></script>
   </body>
 </html>

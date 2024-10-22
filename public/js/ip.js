@@ -1,76 +1,99 @@
+console.log('ip.js setup');
+let ip = null;
+function ipToRgb(ip) {
+  // IPアドレスを数値の配列に変換
+  const ipArray = ip.split('.').map(Number);
 
-async function hashIP(ipAddress) {
-  const buffer = str2ab(ipAddress);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer)); // バッファをバイト配列に変換
-  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join(''); // バイト配列を16進数の文字列に変換
-  return hashHex;
+  // 各オクテットをRGBの範囲(0-255)に収まるように調整
+  const r = Math.floor((ipArray[0] * 255) / 255);
+  const g = Math.floor((ipArray[1] * 255) / 255);
+  const b = Math.floor((ipArray[2] * 255) / 255);
+
+  // RGB値を16進数に変換し、#をつけてカラーコードとして返す
+  return `#${r.toString(16).padStart(2, '0')}${g
+    .toString(16)
+    .padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 }
-// 文字列をArrayBufferに変換する関数
-function str2ab(str) {
-  const buf = new Uint8Array(str.length);
-  for (let i = 0, strLen = str.length; i < strLen; i++) {
-    buf[i] = str.charCodeAt(i);
+async function getIp() {
+  const script = document.createElement('script');
+
+  script.src = 'https://ipinfo.io?callback=callback';
+  document.body.appendChild(script);
+  document.body.removeChild(script);
+}
+getIp();
+function callback(data) {
+  console.log(data.ip);
+  ip = data.ip;
+}
+//localstrage cookie
+const ls = {
+  body: [],
+  key: [],
+  value: [],
+  splitBody: function () {
+    this.key = [];
+    this.value = [];
+    for (var i = 0; i <= this.body.length - 1; i++) {
+      var arr = this.body[i].split('=');
+      this.key.push(decodeURIComponent(arr[0]));
+      this.value.push(decodeURIComponent(arr[1]));
+    }
+  },
+  integrationToBody: function () {
+    this.body = [];
+    var key;
+    var value;
+    for (var i = 0; i <= this.key.length - 1; i++) {
+      key = encodeURIComponent(this.key[i]);
+      value = encodeURIComponent(this.value[i]);
+      this.body.push(`${key}=${value}`);
+    }
+  },
+  convertBody: function () {
+    localStorage.setItem('userData', this.body.join(';'));
+  },
+  add: function (k, v) {
+    this.splitBody();
+    if (this.key.indexOf(k) == -1) {
+      this.key.push(k);
+      this.value.push(v);
+    } else {
+      this.value[this.key.indexOf(k)] = v;
+    }
+    this.integrationToBody();
+    this.convertBody();
+  },
+  remove: function (keyword) {
+    var index = this.key.indexOf(keyword);
+    this.key.splice(index, 1);
+    this.value.splice(index, 1);
+    this.integrationToBody();
+    this.convertBody();
+  },
+  removeByNumber: function (num) {
+    this.key.splice(num, 1);
+    this.value.splice(num, 1);
+    this.integrationToBody();
+    this.convertBody();
+  },
+  search: function (keyword) {
+    var result = null;
+    if (this.key.indexOf(keyword) !== -1) {
+      result = this.value[this.key.indexOf(keyword)];
+    }
+    return result;
+  },
+  delete: function () {
+    localStorage.setItem('userData', null);
+  },
+};
+
+function initLocalStrage() {
+  if (localStorage.getItem('userData') == null) {
+    localStorage.setItem('userData', '');
   }
-  return buf;
+  ls.body = localStorage.getItem('userData').split(';');
+  ls.splitBody();
 }
-function hexToUtf8(hexString) {
-  // Split the hex string into an array of two-character chunks
-  const hexChunks = hexString.match(/.{1,2}/g);
-
-  // Convert the array of hex chunks to an array of characters
-  const utf8Chars = hexChunks.map((hex) => {
-    // Convert each hex chunk to a decimal
-    const decimal = parseInt(hex, 16);
-    // Convert the decimal to a character
-    return String.fromCharCode(decimal);
-  });
-
-  // Combine the array of characters into a single string
-  return utf8Chars.join('');
-}
-
-// Example usage:
-function decimalToBase32(decimal) {
-  // 32進数の基数となる文字列
-  const base32Chars = '0123456789abcdefghijklmnopqrstuv';
-
-  let base32 = '';
-  while (decimal > 0) {
-    // 余りを計算し、対応する文字を取得
-    const remainder = decimal % 32;
-    base32 = base32Chars[remainder] + base32;
-    // 商を次の計算に利用
-    decimal = Math.floor(decimal / 32);
-  }
-  return base32;
-}
-
-
-let ip = null
-let hashIp = null
-let userId = null
-var test = async function(){
-const API_URL = 'https://api.ipify.org/?format=json'
-const res = await fetch(API_URL)
-const data = await res.json()
-  ip = data.ip
-  
-}
-test()
-
-let waitForIp = setInterval(()=>{
-  if(ip !== null){
-    
-    userId = decimalToBase32(Math.floor(getUserColor()))
-    clearInterval(waitForIp)
-  }
-},10)
-let waitForUserId = setInterval(()=>{
-  if(userId !== null){
-      socket.emit("user-id",userId)
-    clearInterval(waitForUserId)
-  }
-},10)
-
-
+initLocalStrage();
