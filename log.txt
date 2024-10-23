@@ -1,1 +1,1 @@
-<font color='#ff0000'>これより前のメッセージはありません。</font>𞄷Server𞄷𞄷
+<font color="#f00">Past message not found</font>,Server,,,room1,hoge
