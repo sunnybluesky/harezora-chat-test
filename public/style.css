@@ -1,6 +1,11 @@
 body {
   margin: 0;
   background: #dffbfb;
+  @font-face {
+    font-family: "Open Sans";
+    src:
+      url("/fonts/keifont.woff") format("woff"),
+  }
 }
 h1 {
   margin: 0px;
