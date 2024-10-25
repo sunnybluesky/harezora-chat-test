@@ -15,7 +15,7 @@ setInterval(() => {
 }, 200);
 function setMessageListSize() {
   messageList.style.height = innerHeight - 150 + 'px';
-  userCountElement.innerHTML = userCount;
+  userCountElement.innerHTML = userList.length;
 }
 function showMessages(m) {
   setMessageListSize();
@@ -47,3 +47,47 @@ function addLinks(text) {
     '<a href="$&" target="_blank" rel="noopener noreferrer" >$&</a>'
   );
 }
+
+const entrantsDialog = document.querySelector(".entrants")
+
+function showEntrants(){
+  var str = `<h2>ユーザーリスト</h2>`
+  var arr = userList.sort((a, b) => b[3] - a[3]);
+  for(var i=0;i<=arr.length-1;i++){
+    str += `
+    <div class="entrant-property">
+      <span>${arr[i][0]}</span>
+      <span class="small">${arr[i][1]}</span>
+    </div>`
+  }
+  entrantsDialog.innerHTML = str
+}
+
+const userCountFrame = document.querySelector(".user-count-frame")
+userCountFrame.addEventListener("click",()=>{
+  showDialog()
+})
+
+var overlay = document.createElement('div');
+overlay.classList.add('overlay'); // CSSで背景をグレーアウトさせる
+
+// ダイアログを表示する関数
+function showDialog() {
+  document.body.appendChild(overlay);
+  entrantsDialog.showModal();
+}
+
+// ダイアログを閉じる関数
+function closeDialog() {
+  document.body.removeChild(overlay);
+  entrantsDialog.close();
+}
+
+// オーバーレイをクリックしたらダイアログを閉じる
+overlay.addEventListener('click', closeDialog);
+// ダイアログの外側をクリックしたらダイアログを閉じる
+entrantsDialog.addEventListener('click', (event) => {
+  if (event.target === entrantsDialog) {
+    closeDialog();
+  }
+});
