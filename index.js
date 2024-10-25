@@ -10,8 +10,11 @@ const colors = require('colors');
 
 const fs = require('fs');
 const logFilePath = 'log.txt';
+let userList = []
+let temporaryUserList = []
+let userCount = 0;//入室者数
 
-let userCount = 0;
+let userNumber = 0;
 
 function addLog(m) {
   for (var i = 0; i <= m.length - 1; i++) {
@@ -81,6 +84,9 @@ server.listen(3000, () => {
   console.log('┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓');
   console.log('┃ ' + 'welcome to harezora-chat! '.rainbow + '┃');
   console.log('┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛');
+  setTimeout(()=>{
+    io.emit("reload")
+  },1000)
 });
 // ルーティングの設定。'/' にリクエストがあった場合 src/index.html を返す
 app.get('/', (req, res) => {
@@ -124,10 +130,29 @@ io.on('connection', (socket) => {
   socket.on('requestMessagesCount', () => {
     io.to(socket.id).emit('receiveMessagesCount', messages.length);
   });
+  socket.on("requestUserList",(name,id,num)=>{
+    var isOverlap = false
+    for(var i=0;i<=temporaryUserList.length-1;i++){
+      if(socket.id == temporaryUserList[i][2]){
+        isOverlap =true
+      }
+    }
+    if(isOverlap){}else{
+      temporaryUserList.push([name,id,socket.id,num])
+    }
+  })
 });
+
+setInterval(()=>{
+  userList = temporaryUserList
+  io.emit('receiveUserList', userList);
+  temporaryUserList = []
+},1000)
 
 function connect(socket) {
   console.log(`user connected. id:${socket.id}`.blue);
+  userNumber++
+  io.to(socket.id).emit("number",userNumber)
   userCount++;
 }
 function disconnect(socket) {
@@ -147,6 +172,7 @@ function arrToObj(arr) {
 
 //コマンドライン
 const readline = require('readline');
+const e = require('express');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -177,3 +203,4 @@ rl.on('line', (line) => {
   }
   rl.prompt();
 });
+
