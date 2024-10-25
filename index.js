@@ -190,6 +190,9 @@ const commands = {
   messages: () => {
     console.log(messages);
   },
+  reload: ()=>{
+    io.emit("reload")
+  }
 };
 
 rl.prompt();
