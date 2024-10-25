@@ -56,3 +56,6 @@ h1 {
   border-radius: 10px;
   border: #bde5e5 solid 1px;
 }
+img{
+  max-width:600px;
+}
