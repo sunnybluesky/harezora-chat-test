@@ -15,8 +15,12 @@
         <div class="bottom-ui">
           name:
           <input type="text" class="input-name" />
-          <img src="img/face.svg" id="face-icon" />
-          <span class="user-count"></span>
+          <span class="user-count-frame">
+
+            <img src="img/face.svg" id="face-icon" />
+            <span class="user-count"></span>
+            <span class="span-button">ユーザーリストを表示</span>
+          </span>
           <br />
           <input
             type="text"
@@ -26,6 +30,7 @@
         </div>
       </div>
     </div>
+    <dialog class="entrants"></dialog>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
     <script src="js/ip.js"></script>
     <script src="js/script.js"></script>
