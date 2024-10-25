@@ -49,3 +49,10 @@ h1 {
   height: 21px;
   transform: translateY(6px);
 }
+.entrants{
+  position:fixed;
+}
+.span-button{
+  border-radius: 10px;
+  border: #bde5e5 solid 1px;
+}
