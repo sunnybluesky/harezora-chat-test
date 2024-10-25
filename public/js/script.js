@@ -2,11 +2,12 @@ console.log('script.js setup');
 
 const messages = [];
 let userCount = 0;
+let userList = []
 const settings = {
   audio: false,
   notice: false,
 };
-const notice = new Audio('../audio/notice.mp3');
+const notice = new Audio('../music/notice.mp3');
 function playSound() {
   notice.play();
 }
@@ -16,11 +17,15 @@ socket.emit('requestMessagesCount');
 socket.on('receiveMessagesCount', (n) => {
   socket.emit('receivePastMessage', n);
 });
+socket.on("reload",()=>{
+  location.reload()
+})
 
 let room = 'room1';
 let user = {
   id: null,
   ip: null,
+  num:0,
   name: 'anonymous',
 };
 socket.emit('joinRoom', room);
@@ -81,6 +86,13 @@ socket.on('receivePastMessage', (data) => {
 socket.on('receiveUserCount', (data) => {
   userCount = data;
 });
+socket.on('receiveUserList', (data) => {
+  userList = data;
+  showEntrants()
+});
+socket.on("number",(n)=>{
+  user.num = n
+})
 function initUserInfo() {
   if (ls.search('name') == null) {
     user.name = 'anonymous';
@@ -108,6 +120,10 @@ function initUserInfo() {
     ls.add('name', sendForm.name.value);
     socket.emit('requestUserCount');
   }, 500);
+  socket.emit('requestUserList',user.name,user.id);
+  setInterval(()=>{
+    socket.emit('requestUserList',user.name,user.id,user.num);
+  },1000)
 }
 initUserInfo();
 function notification() {
@@ -118,7 +134,7 @@ function notification() {
     case 'granted':
       break;
     case 'denied':
-      alert('通知が拒否されています');
+      Notification.requestPermission();
       break;
   }
 }
