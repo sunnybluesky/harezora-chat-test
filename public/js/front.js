@@ -31,7 +31,7 @@ function showMessages(m) {
   m.body = decodeURIComponent(m.body);
   el.innerHTML = `
   <div class="message-info">
-  <span class="message-name">${m.name}</span>
+  <span class="message-name" onclick='reply("${m.name}")'>${m.name}</span>
   <span class="message-id small"> Id:${m.id}</span>
   <span class="message-date small"> ${m.date}</span><br>
   <div class="message-body">${m.body}</div></div>`;
@@ -91,3 +91,38 @@ entrantsDialog.addEventListener('click', (event) => {
     closeDialog();
   }
 });
+
+function reply(replyName){
+  if(sendForm.message.value == ""){
+    alert("メッセージが入力されていません。")
+  }else{
+  var text = `@${replyName},${sendForm.message.value}`;
+  var name = sendForm.name.value;
+  if (name == '') {
+    name = 'anonymous';
+  }
+  sendForm.message.value = '';
+  sendMessage(text, name);
+}
+}
+
+document.getElementById('imageInput').addEventListener('change', function(e) {encodeImage()
+});
+  function encodeImage() {
+      var fileInput = document.getElementById('imageInput').files[0];
+      var reader = new FileReader();
+
+      reader.onloadend = function() {
+        if(reader.result.length < 600000){
+          console.log(reader.result);
+          var check = confirm("このファイルを送信しますか？")
+          if(check){
+            sendMessage(`<img src="${reader.result}">`,user.name)
+          }
+        }else{
+          alert("ファイルサイズが大きすぎます。500kb以下にしてください。")
+        }
+      }
+      
+      reader.readAsDataURL(fileInput);
+  }
