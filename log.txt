@@ -1,2 +1,1 @@
-<font color="#f00">これより前のメッセージは削除されました</font>,Server,,1769777166,room1,hoge
-a,anonymous,%233c43a5-275594,1769776804,room1,hoge
+<font color="#f00">これより前のメッセージは削除されました</font>,Server,Harechat_server,1769777166,room1,hoge
