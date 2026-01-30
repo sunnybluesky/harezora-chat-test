@@ -1,44 +1,50 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <title>hare-chat</title>
-    <meta charset="UTF-8" />
-    <link href="style.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/push.js/0.0.11/push.min.js"></script>
-    <link rel="shortcut icon" href="/img/favicon.ico" />
-  </head>
-  <body>
-    <div class="main-frame">
-      <div class="main">
-        <header>
-          <h1>はれちゃっと！</h1>
-          <iframe id="access-counter" src="https://script.google.com/macros/s/AKfycbwG8BbQ69W04ysGlvSUwInUFWVqWQb8aULyhPSnw3hkgkVzIim6KOfQXXi8NwuH-war/exec?ll=39"></iframe>
-        </header>
-        <div class="message-list"></div>
-        <div class="bottom-ui">
-          name:
-          <input type="text" class="input-name" />
-          <span class="user-count-frame">
 
-            <img src="img/face.svg" id="face-icon" />
-            <span class="user-count"></span>
-            <span class="span-button">ユーザーリストを表示</span>
-          </span>
-          <br />
-          <input
-            type="text"
-            class="input-message"
-            placeholder="Enter your message..."
-          />
-          <br>
-          <input type="file" id="imageInput" accept="image/*">
-        </div>
+<head>
+  <title>hare-chat</title>
+  <meta charset="UTF-8" />
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/push.js/0.0.11/push.min.js"></script>
+  <link rel="shortcut icon" href="/img/favicon.ico" />
+</head>
+
+<body>
+  <div class="main-frame">
+    <div class="main">
+      <header>
+        <h1>はれちゃっと！</h1>
+
+      </header>
+      <div class="message-list"></div>
+      <div class="bottom-ui">
+        name:
+        <input type="text" class="input-name" />
+        <span class="user-count-frame">
+
+          <img src="img/face.svg" id="face-icon" />
+          <span class="user-count"></span>
+          <span class="span-button">ユーザーリストを表示</span>
+
+        </span>
+        <br />
+        <input type="text" class="input-message" placeholder="Enter your message..." />
+        <br>
+        <input type="file" id="imageInput" accept="image/*">
+        <br><span class="show-access">アクセスカウンターを表示</span>
       </div>
     </div>
-    <dialog class="entrants"></dialog>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
-    <script src="js/ip.js"></script>
-    <script src="js/script.js"></script>
-    <script src="js/front.js"></script>
-  </body>
+  </div>
+  <div class="hide access-counter-dialog">
+    <h2>アクセスカウンター</h2>
+    <iframe id="access-counter"
+      src="https://script.google.com/macros/s/AKfycbwG8BbQ69W04ysGlvSUwInUFWVqWQb8aULyhPSnw3hkgkVzIim6KOfQXXi8NwuH-war/exec?ll=39"></iframe>
+  </div>
+  <dialog class="entrants"></dialog>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+  <script src="js/ip.js"></script>
+  <script src="js/script.js"></script>
+  <script src="js/front.js"></script>
+</body>
+
 </html>

@@ -7,7 +7,7 @@ header{
   display:flex;
 }
 #access-counter{
-  height:30px;
+  height:100px;
   width:200px;
 }
 body {
@@ -65,4 +65,7 @@ h1 {
 }
 img{
   max-width:580px;
+}
+.hide{
+  display:none;
 }

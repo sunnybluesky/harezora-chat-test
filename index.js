@@ -36,13 +36,21 @@ function addLog(m) {
     });
   }
 }
-function deleteLog(data = '\n') {
-  // 書き込み
+function deleteLog(index) {
+  const text = fs.readFileSync(logFilePath, 'utf8')
 
-  fs.writeFile(logFilePath, data, (err) => {
+  const lines = text.split('\n');
+
+  lines.splice(index, 1);
+
+  const m = lines.join('\n');
+  fs.writeFile(logFilePath, m, (err) => {
     if (err) throw err;
   });
+  console.log(`line ${index} is deleted.`.red)
 }
+
+
 function getLogLength() {
   var text = fs.readFileSync(logFilePath, 'utf8');
   var lines = text.toString().split('\n');
@@ -82,11 +90,11 @@ app.use(express.static(__dirname + '/public'));
 server.listen(3000, () => {
   console.log('');
   console.log('┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓');
-  console.log('┃ ' + 'welcome to harezora-chat! '.rainbow + '┃');
+  console.log('┃ ' + 'welcome to hare-chat! '.rainbow + '┃');
   console.log('┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛');
-  setTimeout(()=>{
+  setTimeout(() => {
     io.emit("reload")
-  },1000)
+  }, 1000)
 });
 // ルーティングの設定。'/' にリクエストがあった場合 src/index.html を返す
 app.get('/', (req, res) => {
@@ -106,7 +114,7 @@ io.on('connection', (socket) => {
 
   // メッセージを送信
   socket.on('sendMessage', (roomName, message) => {
-    var date = ('' + new Date()).split(' ')[4];
+    var date = Math.floor(Date.now() / 1000);
     message.date = date;
     var body = message.body;
     var name = message.name;
@@ -130,29 +138,29 @@ io.on('connection', (socket) => {
   socket.on('requestMessagesCount', () => {
     io.to(socket.id).emit('receiveMessagesCount', messages.length);
   });
-  socket.on("requestUserList",(name,id,num)=>{
+  socket.on("requestUserList", (name, id, num) => {
     var isOverlap = false
-    for(var i=0;i<=temporaryUserList.length-1;i++){
-      if(socket.id == temporaryUserList[i][2]){
-        isOverlap =true
+    for (var i = 0; i <= temporaryUserList.length - 1; i++) {
+      if (socket.id == temporaryUserList[i][2]) {
+        isOverlap = true
       }
     }
-    if(isOverlap){}else{
-      temporaryUserList.push([name,id,socket.id,num])
+    if (isOverlap) { } else {
+      temporaryUserList.push([name, id, socket.id, num])
     }
   })
 });
 
-setInterval(()=>{
+setInterval(() => {
   userList = temporaryUserList
   io.emit('receiveUserList', userList);
   temporaryUserList = []
-},1000)
+}, 1000)
 
 function connect(socket) {
   console.log(`user connected. id:${socket.id}`.blue);
   userNumber++
-  io.to(socket.id).emit("number",userNumber)
+  io.to(socket.id).emit("number", userNumber)
   userCount++;
 }
 function disconnect(socket) {
@@ -190,8 +198,22 @@ const commands = {
   messages: () => {
     console.log(messages);
   },
-  reload: ()=>{
+  reload: () => {
     io.emit("reload")
+  },
+  deleteLog: () => {
+    rl.prompt();
+
+    rl.on('line', (line) => {
+      console.log("Enter the index you want to delete")
+      const command = line.trim().toLowerCase();
+      if(isNaN(command)){
+        console.log("数字を入れてね")
+      }else{
+        const index = Number(command)
+        deleteLog(index)
+      }
+    });
   }
 };
 
@@ -206,4 +228,3 @@ rl.on('line', (line) => {
   }
   rl.prompt();
 });
-
